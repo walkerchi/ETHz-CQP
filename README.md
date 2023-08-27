@@ -1,5 +1,4 @@
-
-<div align="center"><font color="#732BF5" size=8>CQP</font><font size=6> Computational Quantum  Physics</font></div>
+<div align="center"><font color="#732BF5" size=8>CQP</font><font size=6> Computational Quantum Physics</font></div>
 
 
 
@@ -98,9 +97,11 @@ author : walkerchi
 
 
 
-# Quantum one body problem
+# Quantum 1-body problem
 
-## Time-Independent 1D Schrödinger equation
+given $V$ ,we want to know $\psi$ according to Schrödinger equation $-\frac{\hbar^2}{2m}\partial_x^2\psi(x)+V(x)\psi(x)=E\psi(x)$
+
+## Time-Independent 1 D Schrödinger equation
 
 ​	stationary assumption : $\psi(t)=e^{-iEt/\hbar}\ket  {\psi(0)}$
 $$
@@ -125,10 +126,10 @@ $$
 $$
 
 - **initial problem for symmetry** $V(x)=V(-x)$
-  - even solution : half integer mesh with $\psi_{-\frac{1}{2}}=\psi_{\frac{1}{2}} = 1$
-  - odd solution : integer mesh with $\psi_0 = 0,\psi(x_1)=1$
-- **potential $V$ vanish at large distance**
-  - start from the vanishing exact solution
+  - $\psi(x)=-\psi(x)$ : half integer mesh with $\psi(-\frac{1}{2}\Delta x) = \psi(\frac{1}{2}\Delta x) = 1$
+  - $\psi(-x) = -\psi(x)$ : integer mesh with $\psi(0) = 0 \quad \psi(\Delta x) = 1$
+- **general $V(x)=0$ for  $|x|\ge a$**
+  - $\psi(-a-\Delta x) = \text{exp}(-\Delta x\sqrt {-2mE}/\hbar)\quad \psi(-a)=1$
 
 **1D scattering problem**
 
@@ -137,11 +138,13 @@ a particle approaching the potential barrier $V(x)\begin{cases}
  = 0 & \text{others}
 \end{cases}$ from the left
 
+<img src="question_card.assets/1D-scattering-potential.png" alt="img" style="zoom:20%;" />
+
 - wave function assumptions :
 
-  - left ($x<0$) wave function : $\psi_L(x) = Ae^{iqx}+Be^{-iqx}$
+  - left ($x<0$) wave function : $\psi_L(x) = \underbrace{Ae^{iqx}}_{\text{origin wave}}+\underbrace{Be^{-iqx}}_{\text{reflection}}$
 
-  - right ($x>a$) wave function : $\psi_R(x) = Ce^{iqx}$
+  - right ($x>a$) wave function : $\psi_R(x) = \underbrace{Ce^{iqx}}_{\text{transmission}}$
 
   - where $q$ is the wave number $q^2 = \frac{2m[E-V(x)]}{\hbar^2}$
 
@@ -160,7 +163,9 @@ a particle approaching the potential barrier $V(x)\begin{cases}
 
 **Bound state**
 
-particles are confined due to potential $V(x)=\begin{cases}0&x\in(0,a)\\\infin&\text{otherwise}\end{cases}$
+particles are confined due to potential $V(x)\begin{cases}<0&x\in[0,a]\\= 0&\text{others}\end{cases}$
+
+<img src="question_card.assets/1D-bound-state-potential.png" alt="img" style="zoom:20%;" />
 
 - **shooting method for eigen solver**
   
@@ -168,15 +173,15 @@ particles are confined due to potential $V(x)=\begin{cases}0&x\in(0,a)\\\infin&\
   >
   > 1. try a energy $E$
   > 2. use numerov algorithm from $x=0$ to $x_f\gg a$
-  > 3. satisfy $\psi_E(x_f)\approx 0$ then $E$ is a eigen value else try another $E$
+  > 3. satisfy $\psi_E(x_f)\approx 0$ then $E$ is a eigenvalue else try another $E$
   
 - **Improved Method - Integration from Both Sides**
   
   > <font color="orange"> Algorithm </font>
   >
-  > 1. try a position $b\in (0,a)$ , that $E=V(b)$, $\psi''_E(b)=0$
+  > 1. try a position $b\in (0,a)$ , that $E=V(b)$, $\frac{\partial^2 \psi_E}{\partial x^2} = 0$
   > 2. use numerov from $a$ to $b$ as $\psi_L$ and from $0$ to $b$ as $\psi_R$ 
-  > 3. satisfy $\frac{\psi'_L(b)}{\psi_L(b)}=\frac{\psi'_R(b)}{\psi_R(b)}$, then $E$ is a eigen value else try another $b$
+  > 3. satisfy $\frac{\psi'_L(b)}{\psi_L(b)}=\frac{\psi'_R(b)}{\psi_R(b)}$ ($\psi_L,\psi_R$ are not normalized ), then $E$ is a eigenvalue else try another $b$
 
 
 
@@ -258,6 +263,11 @@ limitations :
 
 - the diagonalization of $H$ is complex, so this method is only useful for small problems
 
+>  Notation
+>
+> - $\ket {\phi_n}$ : eigenvector of $H |ϕ⟩ = E |ϕ⟩ $, $\ket {\psi_0} = \sum c_n\ket{\phi_n}$
+> - $\varepsilon_n$ : eigenvalue of $H |ϕ⟩ = E |ϕ⟩ $
+
 **Direct numerical integration** : $\left(\mathbb  1+ \frac{i\Delta  t}{2\hbar}H\right)\psi(\vec r, t+\Delta  t) = \left(\mathbb 1 - \frac{i\Delta t}{2\hbar}H\right)\psi(\vec r, t)$
 
 - **forward euler** : $\ket {\psi(t_{n+1})}=\ket {\psi(t_n)} - \frac{i\Delta t}{\hbar}\hat H\ket{\psi(t_n)}$
@@ -333,17 +343,22 @@ $$
 
 ​	possible particle configurations for a given type of particle
 
+- $\mathcal F = \underbrace{\mathcal F_0}_{\text{0 particles}} \oplus \underbrace{\mathcal F_1}_{\text{1 particles}} \oplus \cdots$
+
 > Notation
 >
 > - $\oplus$ : direct sum, e.g. $\textbf A \oplus \textbf B = \begin{bmatrix}\textbf  A&\textbf 0\\\textbf 0 &\textbf B\end{bmatrix}$
-> - $S_\pm$ : symmetrization for bosons $\mathcal S_+ \mathcal N_S\sum_p$ / antisymmetrization operator for fermions $\mathcal S_- = \mathcal N_A\sum_p\text{sgn(p)}$
+> - $S_\pm$ : symmetrization for bosons $\mathcal S_+ =\mathcal N_S\sum_p$ / antisymmetrization operator for fermions $\mathcal S_- = \mathcal N_A\sum_p\text{sgn(p)}$
 
-|                      | Bosons                                  | Spinless Fermions | Spinful Fermions | Spin-$\frac{1}{2}$ |
-| -------------------- | --------------------------------------- | ----------------- | ---------------- | ------------------ |
-| Fock space dimension | $\infin$(bosons can take same position) | $2^N$             | $4^N$            | $2^N$              |
+> <font color="lightblue"> Example</font> 
+>
+> |                      | Bosons                                  | Spinless Fermions | Spinful Fermions | Spin-$\frac{1}{2}$ |
+> | -------------------- | --------------------------------------- | ----------------- | ---------------- | ------------------ |
+> | Fock space dimension | $\infin$(bosons can take same position) | $2^N$             | $4^N$            | $2^N$              |
+
 
 **Slater determinant** :$
-\Psi =  \frac{1}{\sqrt {N!}}\left|\begin{matrix}
+\Psi(r_1,\cdots,r_N) =  \frac{1}{\sqrt {N!}}\left|\begin{matrix}
 \phi_1(r_1)&\cdots&\phi_N(r_1)\\
 \vdots & \ddots&\vdots\\
 \phi_r(r_N)&\cdots&\phi_N(r_N)
@@ -352,24 +367,45 @@ $
 
 ​	anti-symmetrized and normalized $N$ single particle wave function product
 
+> Notation
+>
+> - $\phi_i(r_j)$ : wave function of fermion $i$ at position $r_j$  
+
 **Creation and annihilation operators**
 
-- $\hat a$  **annihilation operator** : remove particle $\hat a_i\ket {\phi_j} = \delta_{ij}\ket {\text{null}}$
+- $\hat a$  **annihilation operator** : remove particle $\hat a_i\ket {\phi_j} = \delta_{ij}\ket {0}$
 
-- $\hat a^\dagger$ **creation operator** : add particle $\ket{\phi_i} = \hat a_i^\dagger \ket {\text{null}}$
+- $\hat a^\dagger$ **creation operator** : add particle $\ket{\phi_i} = \hat a_i^\dagger \ket {0}$
 
 > Notation
 >
-> - $\ket {\text{null}}$ : vacuum state with no particles,  $\ket {\text{null}} = \begin{bmatrix}0\\0\end{bmatrix}$
+> - $\ket {0}$ : vacuum state with no particles,  $\ket {0} = \begin{bmatrix}0\\0\end{bmatrix}$
 > - $[\cdot,\cdot]$ : commute, $[A,B]=AB-BA$
 > - $\{\cdot,\cdot\}$ : anti-commute, $\{A,B\}=AB+BA$
 
 - Bosons : commute
-  - $[\hat  a_i, \hat a_j^\dagger] = \delta _{ij}$
-  - $[\hat a_i, \hat a_j] = [\hat a_i^\dagger, \hat a_j^\dagger] = 0$
+  
+  - $\hat a_i\ket{n_i}=\sqrt{n_i}\ket{n_i-1} \quad \hat a_i^\dagger \ket {n_i} = \sqrt {n_i+1}\ket{n_i+1}$
+  - $\hat a_i^\dagger\hat a_i = n_i$
+  
+  - $[\hat  a_i, \hat a_j^\dagger] = \delta _{ij}\quad [\hat a_i, \hat a_j] = [\hat a_i^\dagger, \hat a_j^\dagger] = 0$
+  - $0\underset{\hat a}{\not\leftarrow}\ket  0 \xrightleftharpoons[\hat a]{\hat a^\dagger}\ket 1\xrightleftharpoons[\hat a]{\hat a^\dagger}\ket 2\cdots$
+  
+  
+  
 - Fermions : anti-commute
-  - $\{\hat a_i, \hat a_j^\dagger\} = \delta_{ij}$
-  - $\{\hat a_i,  \hat a_j\} = \{\hat a_i^\dagger, \hat a_j^\dagger\} = 0$
+  - $\hat c_{u_i}\ket{u_i,u_j,\cdots}=\ket{u_j,\cdots} \quad \hat c_{u_i}\ket{u_j,\cdots} = \ket{u_i,u_j,\cdots}$
+  
+  - $\hat c_i^\dagger\hat c_i =\hat n_i$
+  
+    - $n_i = 0$ : $\hat c_i^\dagger\hat c_i\ket{u_j,\cdots} = 0$
+    - $n_i=1$ : $\hat c_{u_i}^\dagger\hat c_{u_i}\ket{u_i,u_j,\cdots}=\ket{u_i,u_j,\cdots}$
+  
+  - $\{\hat c_i, \hat c_j^\dagger\} = \delta_{ij}\quad \{\hat c_i,  \hat c_j\} = \{\hat c_i^\dagger, \hat c_j^\dagger\} = 0$
+  
+  - $0 \underset{\hat c^\dagger_{u_i}}{\not \leftarrow}\ket 0 \xrightleftharpoons[\hat c_{u_i}]{\hat c^\dagger_{u_i}}\ket {u_i}\overset{\hat c^\dagger_{u_i}}{\not\rightarrow} 0$
+  
+    
 
 
 
@@ -426,7 +462,7 @@ $$
 $$
 \hat H = \sum_{<ij>}J_{ij}\left(
 \hat S_i^x\hat S_j^x + \hat S_i^y\hat S_j^y + \Delta\hat S_i^z\hat S_j^z
-\right)
+\right)
 $$
 
 - conserve total magentization $\hat M^z$
@@ -464,7 +500,7 @@ $$
 
 # Brute-force method
 
-## [ED]Exact Diagonalization
+## [ED] Exact Diagonalization
 
 diagonalizing the Hamiltonian matrix
 
@@ -511,13 +547,17 @@ diagonalizing the Hamiltonian matrix
   two possible state $\ket\uparrow$ and $\ket\downarrow$ bitwise operation (xor) rather than vector
 
 - $\hat S_i^z\hat S_{i+1}^z$ : `s = s ^ (s>>1)`
-- $\hat S_i^+\hat S_{i+1}^-$ : `s = s ^ (r<<3)`
+- $\hat S_i^+\hat S_{i+1}^-$ : `s = s ^ (3<<i)`
 
 > <font color="lightblue">Example</font>
 >
 > assume state $s=011_2$
 >
 > then for heisenberg model  $\tilde s = 011 _2\oplus 010_2 = 010_2$ where $\oplus$ is bitwise xor here.
+
+> Notation
+>
+> - $\hat S^\pm$ : $\hat S^\pm = \hbar \sigma^\pm =\hbar(\sigma_x\pm i \sigma_y) $ 
 
 **symmetries**
 
@@ -532,7 +572,7 @@ diagonalizing the Hamiltonian matrix
 
 ## Time evolution
 
-**Trotter-Suzuki  decomposition **: $e^{-i\hat H\Delta t/\hbar}= \prod_{k=1}^K e^{-i\hat h_k\Delta t/\hbar}+\mathcal O(\Delta t^2)$
+**Trotter-Suzuki  decomposition **: $\hat H = \sum_{k=1}^K \hat h_k\to e^{-i\hat H\Delta t/\hbar}= \prod_{k=1}^K e^{-i\hat h_k\Delta t/\hbar}+\mathcal O(\Delta t^2)$
 
 - time-indepedent assumption : $\ket{\psi(t+\Delta t)}= e^{-i\hat H\Delta t/\hbar}\ket{\psi(t)}$
 - non-commuting decomposition : $\hat H = \sum_{k=1}^K\hat h_k\quad [\hat h_i,\hat h_j]\neq 0\quad i\neq j$
@@ -617,7 +657,7 @@ diagonalizing the Hamiltonian matrix
 
 ## Matrix Product state
 
-**[MPS]Matrix Product State** : $\ket{\psi}= \sum_s \text{Tr}(A_1^{s_1}\cdots A^{s_N}_N)\ket {s_1\cdots s_N}$
+**[MPS] Matrix Product State** : $\ket{\psi}= \sum_s \text{Tr}(A_1^{s_1}\cdots A^{s_N}_N)\ket {s_1\cdots s_N}$
 
 <img src="README.assets/mps.png" alt="img" style="zoom:67%;" />
 
@@ -630,13 +670,13 @@ diagonalizing the Hamiltonian matrix
 > \ket {GHZ} = \frac{1}{\sqrt 2}(\ket{\downarrow}^{\otimes N}+\ket{\uparrow}^{\otimes N}) = \frac{1}{Z}\left(\text{Tr}\left((A^{\uparrow})^N\right)\ket{\uparrow}^{\otimes N}+\text{Tr}\left((A^\downarrow)^N\right)\ket{\downarrow}^{\otimes N}
 > \right)
 > $$
-> where $Z$ is a norm and $A^\downarrow = \begin{bmatrix}1&0\\0&0\end{bmatrix}\quad A^\uparrow = \begin{bmatrix}0&0\\0&1\end{bmatrix}$
+> where $Z$ is a norm and $A^\downarrow_i = A^\downarrow = \begin{bmatrix}1&0\\0&0\end{bmatrix}\quad A^\uparrow_i = A^\uparrow = \begin{bmatrix}0&0\\0&1\end{bmatrix}$
 
 > <font color="lightblue"> Example</font> : AKLT state
 >
 > ground state of spin-1 Hamiltonian : $\hat H = \sum_j \hat {\vec S_j}\cdot \hat {\vec S}_{j+1} + \frac{1}{3}\left(\hat{\vec S}_j \cdot \hat{\vec S}_{j+1}\right)^2$
 >
-> with matrices : $A^+=\sqrt{\frac{2}{3}}\sigma^+ = \begin{bmatrix}0&\sqrt{\frac{2}{3}}\\0&0\end{bmatrix}\quad A^0 =\frac{-1}{\sqrt 3}\sigma^z = \begin{bmatrix}-\frac{1}{\sqrt{3}} & 0 \\0 & \frac{1}{\sqrt 3}\end{bmatrix}\quad A^- = - \sqrt{\frac{2}{3}}\sigma^- \begin{bmatrix}0&0\\-\sqrt{\frac{2}{3}}&0\end{bmatrix}$
+> with matrices : $A^+_i = A^+=\sqrt{\frac{2}{3}}\sigma^+ = \begin{bmatrix}0&\sqrt{\frac{2}{3}}\\0&0\end{bmatrix}\quad A^0_i = A^0 =\frac{-1}{\sqrt 3}\sigma^z = \begin{bmatrix}-\frac{1}{\sqrt{3}} & 0 \\0 & \frac{1}{\sqrt 3}\end{bmatrix}\quad A^-_i = A^- = - \sqrt{\frac{2}{3}}\sigma^- \begin{bmatrix}0&0\\-\sqrt{\frac{2}{3}}&0\end{bmatrix}$
 >
 > the corresponding $\ket + $, $\ket  -$ , $\ket 0$ are three states for <font color="orange">spin-1</font> particle not for spin-$\frac{1}{2}$ particle
 
@@ -649,15 +689,13 @@ diagonalizing the Hamiltonian matrix
 >   For translationally symmetric $A_i=A$
 >
 > - $\sigma^+$ : creation / raising operator , $\sigma^+ = \begin{bmatrix}0&0\\1&0\end{bmatrix}$ 
->   - $\sigma^+ \ket \downarrow = \ket {\text{null}}$
+>   - $\sigma^+ \ket \downarrow = 0$
 >   - $\sigma^+ \ket \uparrow =\ket \downarrow$
 >   
 > - $\sigma^-$ : annihilation / lowering operator, $\sigma^- = \begin{bmatrix}0&1\\0&0\end{bmatrix}$
 >   - $\sigma^- \ket \downarrow = \ket \uparrow$
->   - $\sigma^- \ket \uparrow = \ket{\text{null}}$  
+>   - $\sigma^- \ket \uparrow = 0$  
 >   
-> - $\ket{\text{null}}$ :  vaccum state, no particle
->
 > - $\ket +$ : for spin-1 , $\ket + = \ket {\uparrow\uparrow}$
 >
 > - $\ket  -$ : for spin-1 , $\ket - = \ket{\downarrow\downarrow}$
@@ -666,7 +704,7 @@ diagonalizing the Hamiltonian matrix
 
 
 
-**[MPO]Matrix Product  Operator** : $\hat O = \sum_{\sigma_i,\sigma_i'}\left[W_1^{\sigma_1\sigma_1'}\cdots W_N^{\sigma_N\sigma_N'}\right]\ket{\sigma_1\dots\sigma_N}\bra{\sigma_1'\cdots\sigma_N'}$
+**[MPO] Matrix Product  Operator** : $\hat O = \sum_{\sigma_i,\sigma_i'}\left[W_1^{\sigma_1\sigma_1'}\cdots W_N^{\sigma_N\sigma_N'}\right]\ket{\sigma_1\dots\sigma_N}\bra{\sigma_1'\cdots\sigma_N'}$
 
 <img src="README.assets/mpo.png" alt="img" style="zoom:67%;" />
 
@@ -698,7 +736,7 @@ diagonalizing the Hamiltonian matrix
 
 
 
-## [DMRG]Density matrix renormalization group
+## [DMRG] Density matrix renormalization group
 
   find the ground state that $\underset{\ket \psi}{\text{argmin}}\frac{\bra \psi \hat H \ket \psi}{\braket{\psi}}$
 
@@ -731,7 +769,7 @@ diagonalizing the Hamiltonian matrix
 >
 >    
 
-## [TEBD]Time evolving block decimation
+## [TEBD] Time evolving block decimation
 
 <img src="README.assets/TEBD.png" alt="img" style="zoom:50%;" />
 
@@ -754,7 +792,7 @@ diagonalizing the Hamiltonian matrix
 Computation errors :
 
 - truncation error : main error, grows exponentially
-- Trotter error : can be avoid reducing $\Delta t$ and higher expension
+- Trotter error : can be avoid reducing $\Delta t$ and higher expansion
 - small eigen value : at step 3 $\Lambda^{-1} A$ and $B\Lambda^{-1}$
 - imaginary time evolution : canonical form only retrained when  $\Delta\tau\to 0$
 
@@ -766,11 +804,11 @@ Computation errors :
 
   <img src="README.assets/2D_as_chain.png" alt="img" style="zoom:50%;" />
 
-- [PEPS]projected entangled pair state
+- [PEPS] projected entangled pair state
 
   <img src="README.assets/pep.png" alt="img" style="zoom:60%;" />
 
-  - chanllenging  computationally 
+  - challenging  computationally 
   - lack a canonical form
 
 **Mixed state and open quantum system dynamics**
@@ -811,11 +849,11 @@ schmidt eigenstates belong to a fixed magnetization sector
 
 - error $\frac{1}{\sqrt N}$
 
-**Markov Chain** : $P_{XY} = T(X\to Y)A(X\to Y)\quad A(X\to Y) = \text{min}\left(1,\frac{W(Y)}{W(X)}\right)$
+**Markov Chain** : $P_{XY} = T(X\to Y)A(X\to Y)\quad A(X\to Y) = \text{min}\left\{1,\frac{W(Y)}{W(X)}\right\}$
 
-- Erogodicity : $T(X\to Y)>0\quad \forall X,Y$
+- Ergodicity : $T(X\to Y)>0\quad \forall X,Y$
 - Normalization : $\sum_Y T(X\to Y)=1$
-- Reversibility : $T(X\to Y) = T(Y\to  X)$, if $T$ not satisfy this, then $A(X\to Y) = \text{min}\left(\frac{W(Y)T(Y\to X)}{W(X)T(X\to Y)}\right)$
+- Reversibility : $T(X\to Y) = T(Y\to  X)$, if $T$ not satisfy this, then $A(X\to Y) = \text{min}\left\{1,\frac{W(Y)T(Y\to X)}{W(X)T(X\to Y)}\right\}$
 
 > Notation
 >
@@ -837,6 +875,8 @@ $$
 > - $h_i$ : external field
 > - $<i,j>$ : means $i,j$ are connected
 > - $c$ : cluster, $|c|$ means the number of spins inside a cluster
+> - $\beta$ : inverse temperature, $\beta = \frac{1}{\kappa_B T}$
+> - $m$ : magnetization 
 
 
 
@@ -844,7 +884,7 @@ $$
 >
 > 1. two neighboring parallel spins connected with probability $p=1-e^{-2\beta J}$
 > 2. cluster labeling. e.g., Hoshen-Kopelman algorithm
-> 3. measurement : $\langle m^2\rangle_{C'} = \frac{1}{N^2}\sum_c |c|$
+> 3. measurement : $\langle m^2\rangle_{C'} = \frac{1}{N^2}\sum_c |c|^2$
 > 4. cluster flipped with probability $\frac{1}{2}$
 
 > <font color="orange">Algorithm</font> : **Wolff**
@@ -900,13 +940,20 @@ $$
 
    $d$ -dimensional quantum spin model $\Leftrightarrow $ $d+1$- dimensional classical Ising model
 
-**quantum $XY$ model**
+> <font color="lightblue">Example </font>:  1D classical Ising model (0D transverse field Ising model)
+>
+> 
 
-spin flip-flops proportional to $\beta$
+**quantum $XY$ model ** : $\hat H = -\sum_{<i,j>}\frac{J_{xy}}{2}(\hat S_i^+\hat S_j^- + \hat S_i^-\hat S_j^+)$
+
+spin flip-flops (blue line) proportional to $\beta$ which is a constant not grow bigger as $\Delta \tau \to 0$
 
 <img src="README.assets/spin_conservation.png" alt="img" style="zoom:50%;" />
 
-**negative sign problem** : positive off diagonal
+**negative sign problem** : positive off diagonal lead to negative probabilities
+
+- solution : $\langle \hat A\rangle_W = \frac{\sum_C A(C)W(C)}{\sum_C W(C)} = \frac{\sum_C A(C)\text{sign}(W)|W(C)|/\sum_C |W(C)|}{\sum_C \text{sign}(W)|W(C)|/\sum_C|W(C)|}$
+- error : $\beta\uparrow ,L\uparrow\to \epsilon\uparrow$ error $\epsilon$ increase with inverse temperature $\beta$ and system size $L$
 
 
 
@@ -919,9 +966,13 @@ energy expectation(MCMC) : $E_\theta = \frac{\sum_n |\psi_n(\theta)|^2E_1(n)}{\s
 > Notation 
 >
 > - $E_1(n)$ : local energy $E_1(n)=\sum_m \bra n\hat H\ket m\psi_m(\theta)\psi_n(\theta)$
-> - $G_{kl}$ : metric tensor
+> - $G_{kl}$ : metric tensor $G_{kl} = \langle\hat O_k^*\hat O_l\rangle_\theta - \langle \hat O_k^*\rangle_\theta\langle\hat O_l\rangle_\theta$
+> - $O$ : logarithm wave-function derivative $O = \nabla_\theta \psi_n(\theta)/\psi_n(\theta)$
+>   - $\hat O = \sum_n O(n)\ket n \bra n$
 
 **[SGD]Stochastic Graident Descent** : $\theta\gets \theta - \lambda \nabla_\theta E_\theta$
+
+- $\nabla_\theta\langle E\rangle_\theta = 2\text{Re}\left\{\sum_n W(n)[E_1(n)-E_\theta]O(n)\right\}$
 
 **Stochastic Reconfiguration** : $\theta\gets \theta - \Delta \tau G^{-1}\nabla_\theta E_\theta$
 
@@ -929,18 +980,24 @@ energy expectation(MCMC) : $E_\theta = \frac{\sum_n |\psi_n(\theta)|^2E_1(n)}{\s
 
 **Jastrow States** : $\psi_n(\theta  ) = \text{exp}\left(\sum_i a_i\sigma_i +  \sum_{<ij>}J_{ij}\sigma_i\sigma_j \right)\quad \theta= \{a,J\}$
 
+​	wave function form for spin system
+
 **[NQS]Neural Quantum  States ** : $\psi_n(\theta)=\text{MLP}(\{\sigma_1,\cdots,\sigma_N\})$
 
 **[MFPWF]Mean-field projected wave function** : $\ket {\psi(\theta)} = \mathcal P_G \left[\sum_{i,j}\sum_{s,s'}F_{ij}^{ss'}\hat c_{i,s}^\dagger\hat c_{j,s'}^\dagger\right]^{N/2}\ket 0\quad \theta = F_{ij}^{ss'}\in\R^{2N\times 2N}$
+
+- $\psi_n(\theta) = (N/2)!\text{Pf}(X)$
 
   represent spin as pesudo-fermions : $\hat S_i^{\{x,y,z\}} = \frac{1}{2}\sum_{ss'}\hat c_{i,s}\sigma_{ss'}^\alpha\hat c_{i,s'}$
 
 > Notation
 >
 > - $\mathcal P_G$ : Gutzwilller projection operator
-> - $\hat c_{i,s},\hat c_{i,s}^\dagger$ : fermionic operator
+> - $\hat c_{i,s},\hat c_{i,s}^\dagger$ : fermionic annihlation/creation operator
 > - $s,s'$ : spin of the site,  $\uparrow$ or $\downarrow$
 > - $i,j$ : index of the site
+
+
 
 ## Path integrals in quantum statistical mechanics
 
@@ -953,11 +1010,13 @@ $Z = \int \text d\vec R \rho(\vec R,\vec R)=\int \left(\prod_{j=1}^M \text  d\ve
 > - $\rho_{\text{free}}$ : density matrix of  free particles
 > - $Z$ : partition function
 > - $\vec R_j$ : $(\vec r_1,\vec r_2,\cdots,\vec r_N)$ , $N$ particles position at time $j$
-> - $\hat T,\hat V$ : kinetic, potential  terms of Hamiltonian $\hat H$
+> - $\hat T,\hat V$ : kinetic, potential  terms of Hamiltonian $\hat H$, $\hat T = -\frac{\hbar^2}{2m}\partial_x^2$
 
 **path sampling method** : $A(X\to X' ) = \text{min}\left\{1, \frac{\text{exp}(-m[(\vec r_{j-1}^i - \vec r_j^{i'})^2+(\vec r_j^{i'}-\vec r^i_{j+1})^2]/2\hbar^2\Delta\tau)}{\text{exp}(-m[(\vec r_{j-1}^i-\vec r_j^i)^2+(\vec r_j^i - \vec r_{j+1}^i)^2]/2\hbar^2\Delta \tau)}\cdot \text{exp}(-\Delta \tau[V(\vec  R'_j)-V(\vec R_j)])\right\}$
 
   The accept probability of *Metropolis algorithm* is defined above
+
+  $H = \sum_j\sum_i \frac{m}{2(\hbar\Delta  \tau)^2}(\vec r_j^i-\vec r_{j+1}^i)^2+\sum_j V(\vec R_j)$ 
 
 > Notation
 >
@@ -970,7 +1029,7 @@ $Z = \int \text d\vec R \rho(\vec R,\vec R)=\int \left(\prod_{j=1}^M \text  d\ve
 
 $\rho_{\text{Bose}} = \frac{1}{N!}\sum_P \rho(\vec R_1,P\vec R_2, \beta)$
 
-## [DMC]Diffusion Monte Carlo
+## [DMC] Diffusion Monte Carlo
 
 <img src="README.assets/diffusion_monte_carlo.png" alt="img" style="zoom:50%;" />
 
@@ -979,15 +1038,15 @@ $\rho_{\text{Bose}} = \frac{1}{N!}\sum_P \rho(\vec R_1,P\vec R_2, \beta)$
 > 1. $w_0^\alpha \gets 1,\vec R_0^\alpha \gets \vec  R_0$
 > 2. update loop
 >    1. $\vec R^\alpha_k \sim \mathcal N(\vec R^\alpha_{k-1},\frac{\Delta \tau}{m})$ : diffusion update
->    2. $w_k^\alpha\gets w_{k-1}^\alpha e^{-\frac{\Delta \tau}{2}[V(\vec R_k^\alpha+V(\vec R^\alpha_{k-1}))]}$
+>    2. $w_k^\alpha\gets w_{k-1}^\alpha e^{-\frac{\Delta \tau}{2}[V(\vec R_k^\alpha)+V(\vec R^\alpha_{k-1})]}$
 >    3. clone $\lfloor \frac{w_k^\alpha}{\mathbb E_\alpha [w_k^\alpha]} + r\rfloor$ times for walker $\alpha$
 
 - maximum clones $\Leftrightarrow $ $\Delta \tau$ too large
-- scale $w^\alpha\to\text{exp}(E_t\Delta \tau)w^\alpha$ where $E_t$ is trial energy $V(\vec R)-V(\vec R)-E_t$, when $E_t=E_0$ stability will achieve. 
+- scale $w^\alpha\to\text{exp}(E_t\Delta \tau)w^\alpha$ where $E_t$ is trial energy $V(\vec R)\gets V(\vec R)-E_t$, when $E_t=E_0$ stability will achieve. 
 
-**Importance sampling** : $\vec R_{k-1} \gets \vec R_{k-1}+\frac{\hbar^2\Delta\tau}{2m}\frac{\nabla\phi_t(\vec R_{k-1})}{\phi(\vec R_{k-1})}$
+**Importance sampling** : $\vec R_{k-1} \gets \vec R_{k-1}+\frac{\hbar^2\Delta\tau}{2m}\frac{2\nabla\phi_t(\vec R_{k-1})}{\phi(\vec R_{k-1})}$
 
-  before update, add a dift : $\vec R_{k-1} \gets \vec R_{k-1}+\frac{\hbar^2\Delta\tau}{2m}\frac{\nabla\phi_t(\vec R_{k-1})}{\phi(\vec R_{k-1})}$
+  before update, add a dift : $\vec R_{k-1} \gets \vec R_{k-1}+\frac{\hbar^2\Delta\tau}{2m}\frac{2\nabla\phi_t(\vec R_{k-1})}{\phi(\vec R_{k-1})}$
 
 > Notation
 >
@@ -1027,7 +1086,7 @@ $$
 $$
 \begin{aligned}
 \bra \Phi \hat H\ket\Phi &=
-\underbrace{\sum_{i,\sigma}\int  \text d^3 \vec r~\phi_i^{\sigma*}(\vec r)[-\frac{\hbar^2}{2m}\nabla^2 + V_{en}(\vec r)]\sigma_i^\sigma(\vec r) + V_M}_{\hat T_e}
+\underbrace{\sum_{i,\sigma}\int  \text d^3 \vec r~\phi_i^{\sigma*}(\vec r)[-\frac{\hbar^2}{2m}\nabla^2 + V_{en}(\vec r)]\sigma_i^\sigma(\vec r) + V_M}_{\hat T_e+ V_{en}}
 \\
 &\begin{drcases}
 + \sum_{i,j,\sigma,\sigma'}e^2\int \text d^3\vec r~\text d^3\vec r'~\phi_i^{\sigma*}(\vec r)~\phi_j^{\sigma'*}(\vec r')\frac{1}{|\vec r-\vec r'|}\phi_i^\sigma(\vec r)\phi_j^{\sigma'}(\vec r')&\text{Hatree interaction}
@@ -1057,18 +1116,18 @@ $$
 
 **Hohenberg-Kohn Theorem** : for electron system $\hat H = \underbrace{-\frac{\hbar^2}{2m}\sum_j\nabla_j^2}_{\hat T_e}+\underbrace{\frac{1}{2}\sum_{i\neq j}\frac{e^2}{|\vec r_i -\vec r_j|}}_{\hat V_{ee}}+\underbrace{\int v_{\text{ext}}(\vec  r)n(\vec r)\text d\vec r}_{\hat V_{\text{ext}}}$
 
-- **Uniqueness** : $n_0(\vec r) \Leftrightarrow \nu_{\text{ext}}(\vec r)$
+- **Uniqueness** : $n_0(\vec r) \Leftrightarrow v_{\text{ext}}(\vec r)$
 - **Variational** : $n_0 = \underset{n}{\text{argmin}}~E = \underset{n}{\text{argmin}}\bra\Psi \hat H\ket \Psi$
 
 > Notation 
 >
-> - $\nu_{\text{ext}}(\vec r)$ : external potential density
+> - $v_{\text{ext}}(\vec r)$ : external potential density
 > - $n_0(\vec r)$ : ground state electron density 
 > - $n(\vec r)$ : electron density $\sum_j|\phi_j(\vec r)|^2$
 
 **Kohn-Sham solution** :
 
-  non-interacting system that has  the same particle density as the interacting one
+  find a non-interacting system that has  the same particle density as the interacting one
 
 > <font color="orange">Algorithm</font>	
 >
@@ -1105,7 +1164,7 @@ $$
 
 - plane waves basis : $\psi_{\vec k}(\vec r) = \text{exp}(-i\vec k\cdot \vec r)$
 - low temperature : Wigner crystal
-  - eigenfunctions of harmonic oscillatiors centered around 
+  - better basis will be eigenfunctions of harmonic oscillatiors centered around 
 
 **Pseudo-potentials**
 
